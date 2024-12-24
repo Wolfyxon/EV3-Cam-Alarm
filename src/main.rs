@@ -5,6 +5,8 @@ use rscam::{Camera, IntervalInfo, ResolutionInfo};
 use ev3dev_lang_rust::Ev3Result;
 
 const FORMAT: &[u8] = b"MJPG";
+const CHANNEL_THRESHOLD: u8 = 64;
+const DIFF_THRESHOLD: u32 = 1024;
 
 fn main() -> Ev3Result<()> {
     let mut cam = Camera::new("/dev/video0").expect("Camera not connected or not supported");
@@ -30,7 +32,35 @@ fn main() -> Ev3Result<()> {
         ..Default::default() }
     ).expect("Failed to start camera");
 
-    Ok(())
+    let mut last_img = get_image(&cam);
+
+    loop {
+        let img = get_image(&cam);
+        let mut diff: u32 = 0;
+
+        let pixels: Vec<&Rgb<u8>> = img.pixels().collect();
+        let last_pixels: Vec<&Rgb<u8>> = last_img.pixels().collect();
+
+        for i in 0..pixels.len() {
+            let pix = pixels[i];
+            let last_pix = last_pixels[i];
+
+            for chi in 0..pix.0.len() {
+                let ch = pix.0[chi];
+                let lch = last_pix.0[chi];
+                
+                if ch.abs_diff(lch) > CHANNEL_THRESHOLD {
+                    diff += 1;
+                }
+            }
+        }
+
+        if diff > DIFF_THRESHOLD {
+            println!("Motion detected {}", diff);
+        }
+
+        last_img = img;
+    }
 }
 
 fn get_image(cam: &Camera) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
