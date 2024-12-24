@@ -1,16 +1,17 @@
-use std::io::Cursor;
+use std::{io::Cursor, thread, time::Duration};
 use image::{ImageBuffer, ImageReader, Rgb};
 use rscam::{Camera, IntervalInfo, ResolutionInfo};
-use ev3dev_lang_rust::Ev3Result;
+use ev3dev_lang_rust::{Ev3Result, Led};
 
 const FORMAT: &[u8] = b"MJPG";
 const CHANNEL_THRESHOLD: u8 = 64;
-const DIFF_THRESHOLD: u32 = 1024;
+const DIFF_THRESHOLD: u32 = 2000;
 
 fn main() -> Ev3Result<()> {
     println!("Initializing...");
 
     let mut cam = Camera::new("/dev/video0").expect("Camera not connected or not supported");
+    let led = Led::new()?;
 
     let resolutions = cam.resolutions(FORMAT).expect("Failed to get available resolutions");
     println!("Available resolutions: {:?}", resolutions);
@@ -40,6 +41,22 @@ fn main() -> Ev3Result<()> {
     ).expect("Failed to start camera");
 
     println!("Camera started");
+
+    let colors = vec![
+        Led::COLOR_YELLOW,
+        Led::COLOR_ORANGE,
+        Led::COLOR_RED
+    ];
+    
+    println!("Arming in");
+    
+    for i in 0..colors.len() {
+        println!("{}...", colors.len() - i);
+        led.set_color(colors[i])?;
+        thread::sleep(Duration::from_secs(1));
+    }
+
+    led.set_color(Led::COLOR_OFF)?;
 
     let mut last_img = get_image(&cam);
 
