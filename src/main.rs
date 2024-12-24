@@ -1,7 +1,7 @@
 use std::{io::Cursor, thread, time::Duration};
 use image::{ImageBuffer, ImageReader, Rgb};
 use rscam::{Camera, IntervalInfo, ResolutionInfo};
-use ev3dev_lang_rust::{Ev3Result, Led};
+use ev3dev_lang_rust::{sound, Ev3Result, Led};
 
 const FORMAT: &[u8] = b"MJPG";
 const CHANNEL_THRESHOLD: u8 = 64;
@@ -75,6 +75,18 @@ fn main() -> Ev3Result<()> {
 
                     if diff > DIFF_THRESHOLD {
                         println!("Motion detected");
+
+                        for i in 0..20 {
+                            let dur = 100;
+
+                            if i % 2 == 0 {
+                                led.set_color(Led::COLOR_RED)?;
+                                sound::tone(800.0, dur)?.wait()?;
+                            } else {
+                                led.set_color(Led::COLOR_OFF)?;
+                                sound::tone(1000.0, dur)?.wait()?;
+                            }
+                        }
 
                         detected = true;
                         break;
