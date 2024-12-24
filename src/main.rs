@@ -13,6 +13,7 @@ fn main() -> Ev3Result<()> {
     let mut cam = Camera::new("/dev/video0").expect("Camera not connected or not supported");
 
     let resolutions = cam.resolutions(FORMAT).expect("Failed to get available resolutions");
+    println!("Available resolutions: {:?}", resolutions);
 
     let resolution = match resolutions {
         ResolutionInfo::Discretes(res) => res.last().unwrap().to_owned(),
@@ -20,12 +21,17 @@ fn main() -> Ev3Result<()> {
     };
 
     let intervals = cam.intervals(FORMAT, resolution).expect("Failed to get available intervals");    
+    println!("Available intervals: {:?}", intervals);
 
     let interval = match intervals {
         IntervalInfo::Discretes(res) => res.first().unwrap().to_owned(),
         IntervalInfo::Stepwise { max, ..} => max
     };
 
+    println!("Using:");
+    println!("  Resolution: {:?}", resolution);
+    println!("  Interval: {:?}", interval);
+    
     cam.start(&rscam::Config { 
         format: FORMAT,
         resolution: resolution,
