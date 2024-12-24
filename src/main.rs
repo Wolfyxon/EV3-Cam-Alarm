@@ -41,16 +41,11 @@ fn main() -> Ev3Result<()> {
         let last_pixels: Vec<&Rgb<u8>> = last_img.pixels().collect();
 
         for i in 0..pixels.len() {
+            let mut detected = false;
             let pix = pixels[i];
             let last_pix = last_pixels[i];
 
-            let mut detected = false;
-
             for chi in 0..pix.0.len() {
-                if detected {
-                    break;
-                }
-
                 let ch = pix.0[chi];
                 let lch = last_pix.0[chi];
                 
@@ -64,6 +59,10 @@ fn main() -> Ev3Result<()> {
                         break;
                     }
                 }
+            }
+
+            if detected {
+                break;
             }
         }
 
