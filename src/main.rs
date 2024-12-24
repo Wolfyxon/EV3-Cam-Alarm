@@ -1,3 +1,6 @@
+use std::io::Cursor;
+
+use image::{ImageBuffer, ImageReader, Rgb};
 use rscam::{Camera, IntervalInfo, ResolutionInfo};
 use ev3dev_lang_rust::Ev3Result;
 
@@ -28,4 +31,13 @@ fn main() -> Ev3Result<()> {
     ).expect("Failed to start camera");
 
     Ok(())
+}
+
+fn get_image(cam: &Camera) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+    let buf = &cam.capture().unwrap()[..];
+    
+    ImageReader::new(Cursor::new(buf))
+        .with_guessed_format().unwrap()
+        .decode().unwrap()
+        .into_rgb8()
 }
