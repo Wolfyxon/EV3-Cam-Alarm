@@ -57,7 +57,7 @@ fn main() -> Ev3Result<()> {
                     diff += 1;
 
                     if diff > DIFF_THRESHOLD {
-                        println!("Motion detected {}", diff);
+                        println!("Motion detected");
 
                         detected = true;
                         break;
