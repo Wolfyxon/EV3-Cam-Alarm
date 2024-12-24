@@ -13,14 +13,14 @@ fn main() -> Ev3Result<()> {
 
     let resolution = match resolutions {
         ResolutionInfo::Discretes(res) => res.last().unwrap().to_owned(),
-        ResolutionInfo::Stepwise { min, max, step } => min
+        ResolutionInfo::Stepwise { min, .. } => min
     };
 
     let intervals = cam.intervals(FORMAT, resolution).expect("Failed to get available intervals");    
 
     let interval = match intervals {
         IntervalInfo::Discretes(res) => res.first().unwrap().to_owned(),
-        IntervalInfo::Stepwise { min, max, step } => max
+        IntervalInfo::Stepwise { max, ..} => max
     };
 
     cam.start(&rscam::Config { 
