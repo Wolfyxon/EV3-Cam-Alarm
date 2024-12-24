@@ -1,5 +1,4 @@
 use std::io::Cursor;
-
 use image::{ImageBuffer, ImageReader, Rgb};
 use rscam::{Camera, IntervalInfo, ResolutionInfo};
 use ev3dev_lang_rust::Ev3Result;
