@@ -8,6 +8,8 @@ const CHANNEL_THRESHOLD: u8 = 64;
 const DIFF_THRESHOLD: u32 = 1024;
 
 fn main() -> Ev3Result<()> {
+    println!("Initializing...");
+
     let mut cam = Camera::new("/dev/video0").expect("Camera not connected or not supported");
 
     let resolutions = cam.resolutions(FORMAT).expect("Failed to get available resolutions");
@@ -31,7 +33,11 @@ fn main() -> Ev3Result<()> {
         ..Default::default() }
     ).expect("Failed to start camera");
 
+    println!("Camera started");
+
     let mut last_img = get_image(&cam);
+
+    println!("Scanning for movement...");
 
     loop {
         let img = get_image(&cam);
