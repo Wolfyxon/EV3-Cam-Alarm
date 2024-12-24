@@ -63,7 +63,7 @@ fn main() -> Ev3Result<()> {
     println!("Scanning for movement...");
 
     loop {
-        let img = get_image(&cam);
+        let mut img = get_image(&cam);
         let mut diff: u32 = 0;
 
         for (pix, last_pix) in img.pixels().zip(last_img.pixels()) {
@@ -95,6 +95,7 @@ fn main() -> Ev3Result<()> {
             }
 
             if detected {
+                img = get_image(&cam);
                 break;
             }
         }
