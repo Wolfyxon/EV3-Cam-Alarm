@@ -44,18 +44,27 @@ fn main() -> Ev3Result<()> {
             let pix = pixels[i];
             let last_pix = last_pixels[i];
 
+            let mut detected = false;
+
             for chi in 0..pix.0.len() {
+                if detected {
+                    break;
+                }
+
                 let ch = pix.0[chi];
                 let lch = last_pix.0[chi];
                 
                 if ch.abs_diff(lch) > CHANNEL_THRESHOLD {
                     diff += 1;
+
+                    if diff > DIFF_THRESHOLD {
+                        println!("Motion detected {}", diff);
+
+                        detected = true;
+                        break;
+                    }
                 }
             }
-        }
-
-        if diff > DIFF_THRESHOLD {
-            println!("Motion detected {}", diff);
         }
 
         last_img = img;
