@@ -16,7 +16,7 @@ fn main() -> Ev3Result<()> {
     println!("Available resolutions: {:?}", resolutions);
 
     let resolution = match resolutions {
-        ResolutionInfo::Discretes(res) => res.last().unwrap().to_owned(),
+        ResolutionInfo::Discretes(res) => res.first().unwrap().to_owned(),
         ResolutionInfo::Stepwise { min, .. } => min
     };
 
