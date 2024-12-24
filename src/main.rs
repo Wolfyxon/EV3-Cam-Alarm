@@ -43,18 +43,10 @@ fn main() -> Ev3Result<()> {
         let img = get_image(&cam);
         let mut diff: u32 = 0;
 
-        let pixels: Vec<&Rgb<u8>> = img.pixels().collect();
-        let last_pixels: Vec<&Rgb<u8>> = last_img.pixels().collect();
-
-        for i in 0..pixels.len() {
+        for (pix, last_pix) in img.pixels().zip(last_img.pixels()) {
             let mut detected = false;
-            let pix = pixels[i];
-            let last_pix = last_pixels[i];
 
-            for chi in 0..pix.0.len() {
-                let ch = pix.0[chi];
-                let lch = last_pix.0[chi];
-                
+            for (&ch, &lch) in pix.0.iter().zip(last_pix.0.iter()) {
                 if ch.abs_diff(lch) > CHANNEL_THRESHOLD {
                     diff += 1;
 
